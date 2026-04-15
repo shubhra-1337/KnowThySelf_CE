@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KnowThySelf | Questionnaire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════
+         ONE UI SERENITY — DARK MODE (Default)
+         ═══════════════════════════════════════════ */
+    :root {
+      --bg-dark: #0f172a;
+      --calm-bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --highlight: #5709e7;
+      --contrast: #38bdf8;
+      /* Vibrant teal contrast */
+
+      --glass-bg: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.01));
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --btn-text: #0f172a;
+    }
+
+    /* ═══════════════════════════════════════════
+         LIGHT MODE OVERRIDES (Serene Sky)
+         ═══════════════════════════════════════════ */
+    body.light-mode {
+      /* Deep slate text ensures perfect readability */
+      --bg-dark: #f8fafc;
+      --calm-bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+      --text-main: #020617;
+      --text-muted: #334155;
+
+      /* One UI Blue for primary actions, with vibrant teal as contrast */
+      --highlight: #2563eb;
+      --contrast: #4f46e5;
+
+      /* Crisp frosted glass that rests beautifully over the blue background */
+      --glass-bg: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.75),
+          rgba(255, 255, 255, 0.45));
+      --glass-border: rgba(30, 41, 59, 0.1);
+      --glass-shadow: 0 8px 32px rgba(30, 41, 59, 0.08);
+      --btn-text: #ffffff;
+
+      /* Surface overrides for better contrast */
+      --surface-bg: rgba(0, 0, 0, 0.04);
+      --surface-bg-hover: rgba(0, 0, 0, 0.06);
+      --surface-bg-active: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Lexend", sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      text-align: justify;
+      transition:
+        background 0.35s ease,
+        color 0.35s ease;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand,
+    .title,
+    .section-title,
+    .q-text,
+    #resultType {
+      font-family: "Lexend", sans-serif;
+    }
+
+    p {
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    .calm-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: var(--calm-bg-gradient);
+      transition: background 0.35s ease;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--surface-bg, rgba(255, 255, 255, 0.05));
+      z-index: 100;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--highlight);
+      transition: width 0.4s ease;
+    }
+
+    /* ── Header ── */
+    header {
+      margin-top: 50px;
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 0 20px;
+      z-index: 2;
+      width: 100%;
+      max-width: 1255px;
+      position: relative;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--text-main);
+      margin-bottom: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    h3 {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--surface-bg-hover, rgba(255, 255, 255, 0.03));
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Lexend", sans-serif;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--highlight);
+      color: var(--highlight);
+      background: rgba(96, 165, 250, 0.08);
+    }
+
+    /* ── Glass Box ── */
+    .glass-box {
+      width: 95%;
+      max-width: 1255px;
+      min-height: 500px;
+      height: auto;
+      position: relative;
+
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      box-shadow: var(--glass-shadow);
+
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-bottom: 40px;
+      z-index: 2;
+      transition:
+        background 0.35s ease,
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+
+    /* ── Question card slide system ── */
+    #mbtiForm {
+      position: relative;
+      flex: 1;
+      min-height: 420px;
+      overflow: hidden;
+    }
+
+    .question-card {
+      position: absolute;
+      inset: 0;
+      padding: 60px 60px 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      /* Default: waiting on the right */
+      opacity: 0;
+      transform: translateX(60px);
+      pointer-events: none;
+      transition:
+        opacity 0.38s ease,
+        transform 0.38s ease;
+    }
+
+    /* Current question: centred and visible */
+    .question-card.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    /* Already-answered card: sent to the left */
+    .question-card.visited {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    .q-text {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 600;
+      color: var(--text-main);
+      border-left: 4px solid var(--highlight);
+      padding-left: 20px;
+      line-height: 1.4;
+      margin-bottom: 48px;
+    }
+
+    /* ── Options Bento Grid ── */
+    .options-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .radio-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    .radio-wrapper label {
+      width: 100%;
+      height: 65px;
+      border-radius: 35px;
+      background: var(--surface-bg-hover, rgba(255, 255, 255, 0.03));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(5px);
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 0.95rem;
+      padding: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .radio-wrapper label:hover {
+      border-color: var(--highlight);
+      color: var(--text-main);
+      background: rgba(96, 165, 250, 0.1);
+      transform: translateY(-4px);
+    }
+
+    input:checked+label {
+      background: linear-gradient(135deg,
+          rgba(96, 165, 250, 0.45),
+          rgba(56, 189, 248, 0.15));
+      border-color: var(--highlight);
+      color: var(--text-main);
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(87, 9, 231, 0.25);
+      transform: translateY(-4px) scale(0.98);
+      transition: all 0.15s ease;
+    }
+
+    /* ── Navigation ── */
+    .nav-controls {
+      width: 100%;
+      padding: 30px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .nav-btn {
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: "Lexend", sans-serif;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--highlight);
+      border: 2px solid var(--highlight);
+    }
+
+    .btn-outline:hover {
+      background: var(--highlight);
+      color: var(--btn-text);
+      box-shadow: 0 8px 20px rgba(87, 9, 231, 0.25);
+    }
+
+    .btn-solid {
+      background: var(--highlight);
+      color: var(--btn-text);
+      border: none;
+    }
+
+    .btn-solid:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 8px 25px rgba(87, 9, 231, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-next {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-next:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.visible {
+      display: flex;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    /* ── Mobile ── */
+    /* ── Tablet ── */
+    @media (max-width: 768px) {
+      header {
+        margin-top: 30px;
+        margin-bottom: 20px;
+        padding: 0 16px;
+      }
+
+      h1 {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+      }
+
+      h3 {
+        font-size: clamp(0.85rem, 3vw, 1rem);
+      }
+
+      .glass-box {
+        width: 98%;
+        border-radius: 20px;
+        min-height: auto;
+        padding-bottom: 16px;
+      }
+
+      #mbtiForm {
+        min-height: 360px;
+      }
+
+      .question-card {
+        padding: 35px 24px 30px;
+      }
+
+      .q-text {
+        font-size: clamp(1rem, 4vw, 1.35rem);
+        margin-bottom: 30px;
+        padding-left: 14px;
+      }
+
+      .options-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .radio-wrapper {
+        width: 100%;
+      }
+
+      .radio-wrapper label {
+        height: 52px;
+        border-radius: 26px;
+        justify-content: flex-start;
+        padding-left: 24px;
+        text-align: left;
+        font-size: 1rem;
+      }
+
+      .nav-controls {
+        padding: 16px 20px;
+      }
+
+      .nav-btn {
+        padding: 10px 22px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* ── Small phones ── */
+    @media (max-width: 480px) {
+      header {
+        margin-top: 20px;
+        margin-bottom: 14px;
+      }
+
+      .glass-box {
+        width: 100%;
+        border-radius: 16px;
+      }
+
+      #mbtiForm {
+        min-height: 320px;
+      }
+
+      .question-card {
+        padding: 28px 18px 24px;
+      }
+
+      .q-text {
+        font-size: 1rem;
+        margin-bottom: 24px;
+        padding-left: 12px;
+        border-left-width: 3px;
+      }
+
+      .radio-wrapper label {
+        height: 48px;
+        font-size: 0.9rem;
+        padding-left: 18px;
+      }
+
+      .nav-controls {
+        padding: 14px 16px;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+      }
+
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Theme flash prevention -->
+  <script>
+    if (localStorage.getItem("theme") === "light")
+      document.body.classList.add("light-mode");
+  </script>
+
+  <div class="calm-bg"></div>
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <header>
+    <div class="header-row">
+      <h1>Self-Discovery Questionnaire</h1>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        🌓
+      </button>
+    </div>
+    <h3>Select the option that resonates with your natural state.</h3>
+  </header>
+
+  <div class="glass-box">
+    <form id="mbtiForm"></form>
+
+    <div class="nav-controls">
+      <button type="button" id="backBtn" class="nav-btn btn-outline" onclick="prevQuestion()">
+        ← Back
+      </button>
+      <div style="flex-grow: 1"></div>
+      <button type="button" id="nextBtn" class="nav-btn btn-next" onclick="nextQuestion()" style="margin-right: 10px">
+        Next →
+      </button>
+      <button type="button" id="submitBtn" class="nav-btn btn-solid" onclick="getResult()">
+        View My Insights
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    <span style="font-family: 'Lexend', sans-serif">&copy;</span> 2026
+    KnowThySelf
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      localStorage.setItem(
+        "theme",
+        document.body.classList.contains("light-mode") ? "light" : "dark",
+      );
+    }
+
+    // --- QUIZ LOGIC ---
+    const scoring = {
+      "Strongly Disagree": -3,
+      Disagree: -2,
+      "Slightly Disagree": -1,
+      Neutral: 0,
+      "Slightly Agree": 1,
+      Agree: 2,
+      "Strongly Agree": 3,
+    };
+    const questions = [
+      {
+        text: "I feel energized after spending time with a group of people.",
+        dimension: "EI",
+        reverse: false,
+      },
+      {
+        text: "I prefer thinking things through alone before sharing my ideas.",
+        dimension: "EI",
+        reverse: true,
+      },
+      {
+        text: "I enjoy starting conversations with strangers.",
+        dimension: "EI",
+        reverse: false,
+      },
+      {
+        text: "I feel drained after social gatherings, even if fun.",
+        dimension: "EI",
+        reverse: true,
+      },
+      {
+        text: "I often speak my thoughts out loud to process them.",
+        dimension: "EI",
+        reverse: false,
+      },
+      {
+        text: "I focus on facts and details rather than possibilities.",
+        dimension: "SN",
+        reverse: false,
+      },
+      {
+        text: "I enjoy imagining future possibilities more than analyzing the present.",
+        dimension: "SN",
+        reverse: true,
+      },
+      {
+        text: "I notice small changes and details in my environment easily.",
+        dimension: "SN",
+        reverse: false,
+      },
+      {
+        text: "I often look for patterns or meanings rather than just obvious facts.",
+        dimension: "SN",
+        reverse: true,
+      },
+      {
+        text: "I trust practical experience over abstract theories.",
+        dimension: "SN",
+        reverse: false,
+      },
+      {
+        text: "I make decisions based on logic rather than personal feelings.",
+        dimension: "TF",
+        reverse: false,
+      },
+      {
+        text: "I consider others' emotions when making decisions.",
+        dimension: "TF",
+        reverse: true,
+      },
+      {
+        text: "I value fairness and rules over personal relationships.",
+        dimension: "TF",
+        reverse: false,
+      },
+      {
+        text: "I often prioritize harmony and compassion over being strictly correct.",
+        dimension: "TF",
+        reverse: true,
+      },
+      {
+        text: "I enjoy debating ideas even if it might upset someone.",
+        dimension: "TF",
+        reverse: false,
+      },
+      {
+        text: "I prefer to have a detailed plan before starting a project.",
+        dimension: "JP",
+        reverse: false,
+      },
+      {
+        text: "I am comfortable leaving things open-ended and going with the flow.",
+        dimension: "JP",
+        reverse: true,
+      },
+      {
+        text: "I stick to deadlines and schedules consistently.",
+        dimension: "JP",
+        reverse: false,
+      },
+      {
+        text: "I enjoy being spontaneous rather than following a strict plan.",
+        dimension: "JP",
+        reverse: true,
+      },
+      {
+        text: "I like finishing tasks ahead of time rather than waiting until the last minute.",
+        dimension: "JP",
+        reverse: false,
+      },
+    ];
+
+    const choices = [
+      "Strongly Agree",
+      "Agree",
+      "Slightly Agree",
+      "Neutral",
+      "Slightly Disagree",
+      "Disagree",
+      "Strongly Disagree",
+    ];
+
+    const form = document.getElementById("mbtiForm");
+    let currentStep = 0;
+
+    // Render Questions
+    questions.forEach((q, idx) => {
+      const div = document.createElement("div");
+      div.className = "question-card";
+      div.id = `card-${idx}`;
+      div.innerHTML = `<p class="q-text">${idx + 1}. ${q.text}</p>`;
+      const container = document.createElement("div");
+      container.className = "options-container";
+
+      choices.forEach((choice) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "radio-wrapper";
+        wrapper.innerHTML = `<input type="radio" id="q${idx}_${choice.replace(/\s/g, "")}" name="${idx + 1}" data-value="${scoring[choice]}" onclick="handleSelection(${idx}, ${scoring[choice]})">
+                                     <label for="q${idx}_${choice.replace(/\s/g, "")}">${choice.replace(" ", "<br>")}</label>`;
+        container.appendChild(wrapper);
+      });
+      div.appendChild(container);
+      form.appendChild(div);
+    });
+
+    window.onload = () => {
+      restoreAnswers();
+      restoreSession();
+      updateProgress();
+    };
+
+    // Global timer handle for auto-advance
+    let autoAdvanceTimeout = null;
+
+    function handleSelection(qIndex, value) {
+      saveAnswer(qIndex, value);
+      updateProgress();
+
+      // Cancel any pending advance (e.g. user changed their mind quickly)
+      clearTimeout(autoAdvanceTimeout);
+
+      // Auto-advance after 500 ms, but not on the very last question
+      if (qIndex < questions.length - 1) {
+        autoAdvanceTimeout = setTimeout(() => {
+          nextQuestion();
+        }, 500);
+      }
+    }
+
+    function saveAnswer(qIndex, value) {
+      let answers = JSON.parse(localStorage.getItem("mbtiAnswers")) || {};
+      answers[qIndex] = value;
+      localStorage.setItem("mbtiAnswers", JSON.stringify(answers));
+    }
+
+    function restoreAnswers() {
+      let answers = JSON.parse(localStorage.getItem("mbtiAnswers"));
+      if (!answers) return;
+      for (const [qIndex, value] of Object.entries(answers)) {
+        const radios = document.getElementsByName(parseInt(qIndex) + 1);
+        for (const radio of radios) {
+          if (parseInt(radio.dataset.value) === parseInt(value)) {
+            radio.checked = true;
+          }
+        }
+      }
+    }
+
+    function restoreSession() {
+      const s = parseInt(localStorage.getItem("mbtiStep"));
+      if (!isNaN(s) && s >= 0 && s < questions.length) currentStep = s;
+      else currentStep = 0;
+      // Mark all cards before currentStep as visited (left side)
+      document.querySelectorAll(".question-card").forEach((c, i) => {
+        c.classList.remove("active", "visited");
+        if (i < currentStep) c.classList.add("visited");
+      });
+      const curr = document.getElementById(`card-${currentStep}`);
+      if (curr) curr.classList.add("active");
+      updateButtons();
+    }
+
+    function nextQuestion() {
+      const curr = document.getElementById(`card-${currentStep}`);
+      const next = document.getElementById(`card-${currentStep + 1}`);
+      if (next) {
+        localStorage.setItem("mbtiStep", currentStep + 1);
+        // Slide current card left
+        curr.classList.remove("active");
+        curr.classList.add("visited");
+        currentStep++;
+        // Slide next card in from right (remove visited in case user went back)
+        next.classList.remove("visited");
+        next.classList.add("active");
+        updateButtons();
+      } else {
+        updateButtons(true);
+      }
+    }
+
+    function prevQuestion() {
+      if (currentStep > 0) {
+        const curr = document.getElementById(`card-${currentStep}`);
+        const prev = document.getElementById(`card-${currentStep - 1}`);
+        localStorage.setItem("mbtiStep", currentStep - 1);
+        // Slide current card back to right (default unvisited state)
+        curr.classList.remove("active");
+        currentStep--;
+        // Slide previous card back in from left
+        prev.classList.remove("visited");
+        prev.classList.add("active");
+        updateButtons();
+      }
+    }
+
+    function updateButtons(isEnd = false) {
+      const isLast = isEnd || currentStep === questions.length - 1;
+      document
+        .getElementById("backBtn")
+        .classList.toggle("visible", currentStep > 0);
+      document.getElementById("nextBtn").classList.toggle("visible", !isLast);
+      document
+        .getElementById("submitBtn")
+        .classList.toggle("visible", isLast);
+    }
+
+    function updateProgress() {
+      const answered = document.querySelectorAll(
+        'input[type="radio"]:checked',
+      ).length;
+      document.getElementById("progressBar").style.width =
+        (answered / questions.length) * 100 + "%";
+    }
+
+    function getResult() {
+      const scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+      for (let i = 0; i < questions.length; i++) {
+        const radios = document.getElementsByName(i + 1);
+        let val = null;
+        for (const r of radios) if (r.checked) val = Number(r.dataset.value);
+
+        if (val === null) {
+          alert(`Question ${i + 1} incomplete.`);
+          document
+            .querySelectorAll(".question-card")
+            .forEach((c) => c.classList.remove("active"));
+          document.getElementById(`card-${i}`).classList.add("active");
+          currentStep = i;
+          localStorage.setItem("mbtiStep", i);
+          updateButtons();
+          return;
+        }
+
+        if (questions[i].reverse) val *= -1;
+        const d = questions[i].dimension;
+        if (d === "EI") val >= 0 ? (scores.E += val) : (scores.I += -val);
+        if (d === "SN") val >= 0 ? (scores.S += val) : (scores.N += -val);
+        if (d === "TF") val >= 0 ? (scores.T += val) : (scores.F += -val);
+        if (d === "JP") val >= 0 ? (scores.J += val) : (scores.P += -val);
+      }
+
+      const calcPct = (a, b) => {
+        const total = a + b;
+        return total === 0 ? 50 : Math.round((a / total) * 100);
+      };
+      const stats = {
+        E: calcPct(scores.E, scores.I),
+        I: calcPct(scores.I, scores.E),
+        S: calcPct(scores.S, scores.N),
+        N: calcPct(scores.N, scores.S),
+        T: calcPct(scores.T, scores.F),
+        F: calcPct(scores.F, scores.T),
+        J: calcPct(scores.J, scores.P),
+        P: calcPct(scores.P, scores.J),
+      };
+
+      const res =
+        (scores.E >= scores.I ? "E" : "I") +
+        (scores.S >= scores.N ? "S" : "N") +
+        (scores.T >= scores.F ? "T" : "F") +
+        (scores.J >= scores.P ? "J" : "P");
+
+      localStorage.setItem("mbtiResult", res);
+      localStorage.setItem("mbtiStats", JSON.stringify(stats));
+      localStorage.removeItem("mbtiStep");
+      localStorage.removeItem("mbtiAnswers");
+
+      document.body.classList.add("fade-out");
+      setTimeout(() => (window.location.href = "dashboard.html"), 500);
+    }
+  </script>
+
+  <!-- Particle Effect -->
+  <script>
+    const canvas = document.getElementById("particleCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vy = Math.random() * 0.5 + 0.3;
+        this.size = Math.random() * 2 + 1;
+        this.op = Math.random() * 0.4 + 0.3;
+        const hue = Math.floor(Math.random() * 20) + 200;
+        const sat = Math.floor(Math.random() * 30) + 70;
+        const light = document.body.classList.contains("light-mode")
+          ? Math.floor(Math.random() * 15) + 45
+          : Math.floor(Math.random() * 25) + 60;
+        this.color = `hsla(${hue}, ${sat}%, ${light}%, ${this.op})`;
+      }
+      update() {
+        this.y += this.vy;
+        this.x += Math.sin(this.y * 0.01) * 0.3;
+        if (this.y > canvas.height) {
+          this.y = -10;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function spawnParticles() {
+      particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push(new Particle());
+      }
+    }
+    spawnParticles();
+
+    if (typeof toggleTheme === "function") {
+      const _prev = toggleTheme;
+      window.toggleTheme = function () {
+        _prev();
+        spawnParticles();
+      };
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+
+</html>
