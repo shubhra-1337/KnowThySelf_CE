@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KnowThySelf | Your Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════
+         ONE UI SERENITY — DARK MODE (Default)
+         ═══════════════════════════════════════════ */
+    :root {
+      --bg-dark: #0f172a;
+      --calm-bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --highlight: #38bdf8;
+      --contrast: #34d399;
+
+      --highlight-glow: rgba(56, 189, 248, 0.4);
+      --highlight-pill: rgba(56, 189, 248, 0.12);
+
+      --glass-bg: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.01));
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --btn-text: #0f172a;
+    }
+
+    /* ═══════════════════════════════════════════
+         LIGHT MODE OVERRIDES (Serene Sky)
+         ═══════════════════════════════════════════ */
+    body.light-mode {
+      --bg-dark: #eef6fc;
+      --calm-bg-gradient: linear-gradient(135deg, #eef6fc 0%, #dae7fa 100%);
+
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+
+      --highlight: #2563eb;
+      --contrast: #5709e7;
+
+      --highlight-glow: rgba(37, 99, 235, 0.35);
+      --highlight-pill: rgba(37, 99, 235, 0.12);
+
+      --glass-bg: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.75),
+          rgba(255, 255, 255, 0.45));
+      --glass-border: rgba(30, 41, 59, 0.05);
+      --glass-shadow: 0 8px 32px rgba(30, 41, 59, 0.06);
+      --btn-text: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Lexend", sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      overflow-x: hidden;
+      text-align: justify;
+      transition:
+        background 0.35s ease,
+        color 0.35s ease;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand,
+    .title,
+    .section-title,
+    .q-text,
+    #resultType {
+      font-family: "Lexend", sans-serif;
+    }
+
+    p {
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+
+    .calm-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: var(--calm-bg-gradient);
+      transition: background 0.35s ease;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    /* ── Theme Toggle (fixed top-right) ── */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 50;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Lexend", sans-serif;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--highlight);
+      color: var(--highlight);
+      background: rgba(96, 165, 250, 0.06);
+    }
+
+    /* ── Dashboard Bento Grid ── */
+    .dashboard-wrapper {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 32px;
+      align-items: stretch;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* LEFT: TYPE */
+    .type-section {
+      grid-column: span 4;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      padding: clamp(40px, 5vw, 60px);
+      border-radius: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .type-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg,
+          transparent,
+          var(--highlight),
+          transparent);
+      opacity: 0.25;
+    }
+
+    .type-section h2 {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    #resultType {
+      font-size: clamp(4rem, 10vw, 8rem);
+      line-height: 1;
+      font-weight: 800;
+      color: transparent;
+      background: linear-gradient(to bottom,
+          var(--text-main),
+          var(--highlight));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 16px 36px;
+      background: var(--highlight);
+      border: 1px solid var(--highlight);
+      color: var(--btn-text);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: 20px;
+      font-family: "Lexend", sans-serif;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 8px 25px var(--highlight-glow);
+      transform: translateY(-2px);
+    }
+
+    /* RIGHT SECTION CONTAINER */
+    .right-section {
+      grid-column: span 8;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* BENTO CARDS */
+    .content-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      padding: clamp(35px, 5vw, 50px);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out forwards;
+      transition:
+        background 0.35s ease,
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+
+    .content-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg,
+          transparent,
+          var(--highlight),
+          transparent);
+      opacity: 0.25;
+    }
+
+    #typeDescription {
+      font-family: "Lexend", sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    /* GRAPH STYLES */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      font-weight: 600;
+    }
+
+    .label-left {
+      color: var(--highlight);
+    }
+
+    .label-right {
+      color: var(--contrast);
+    }
+
+    .bar-container {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Gradient fill from left trait color to right trait color */
+    .bar-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: linear-gradient(to right, var(--highlight), var(--contrast));
+      opacity: 0.35;
+    }
+
+    /* The indicator dot */
+    .bar-indicator {
+      position: absolute;
+      top: 50%;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--highlight);
+      border: 3px solid var(--text-main);
+      transform: translate(-50%, -50%);
+      transition: left 1s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 5;
+      box-shadow: 0 0 12px var(--highlight-glow), 0 0 24px var(--highlight-glow);
+      left: 0%;
+    }
+
+    /* Active fill — fills from the left up to the indicator */
+    .bar-active-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-radius: 10px;
+      background: var(--highlight);
+      opacity: 0.85;
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0%;
+      z-index: 2;
+    }
+
+    /* Dominant label gets a bright pill background */
+    .label-dominant {
+      background: var(--highlight-pill);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .label-weak {
+      opacity: 0.6;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    /* ── Tablet ── */
+    @media (max-width: 900px) {
+      body {
+        padding: 30px 16px;
+      }
+
+      .dashboard-wrapper {
+        gap: 20px;
+      }
+
+      .type-section,
+      .right-section {
+        grid-column: span 12;
+      }
+
+      .type-section {
+        padding: 35px 24px;
+      }
+
+      #resultType {
+        font-size: clamp(3rem, 12vw, 5rem);
+      }
+
+      .content-card {
+        padding: 28px 24px;
+      }
+
+      #typeDescription {
+        font-size: 0.95rem;
+      }
+
+      .stat-row {
+        padding: 16px;
+      }
+
+      .btn-primary {
+        padding: 14px 28px;
+        font-size: 0.95rem;
+      }
+    }
+
+    /* ── Small phones ── */
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      .dashboard-wrapper {
+        gap: 16px;
+      }
+
+      .type-section {
+        padding: 28px 18px;
+        border-radius: 18px;
+      }
+
+      .type-section h2 {
+        font-size: 1rem;
+      }
+
+      #resultType {
+        font-size: clamp(2.5rem, 15vw, 4rem);
+        margin-bottom: 14px;
+      }
+
+      .content-card {
+        padding: 22px 18px;
+        border-radius: 18px;
+      }
+
+      #typeDescription {
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .stat-header {
+        font-size: 0.85rem;
+      }
+
+      .stat-row {
+        padding: 14px 12px;
+      }
+
+      .bar-container {
+        height: 8px;
+      }
+
+      .bar-indicator {
+        width: 18px;
+        height: 18px;
+      }
+
+      .btn-primary {
+        padding: 13px 24px;
+        font-size: 0.9rem;
+        margin-top: 14px;
+      }
+
+      .theme-toggle {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+        top: 14px;
+        right: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Theme flash prevention -->
+  <script>
+    if (localStorage.getItem("theme") === "light")
+      document.body.classList.add("light-mode");
+  </script>
+
+  <div class="calm-bg"></div>
+  <canvas id="particleCanvas"></canvas>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+    🌓
+  </button>
+
+  <div class="dashboard-wrapper">
+    <div class="type-section">
+      <h2>Your Personality Type</h2>
+      <div id="resultType"></div>
+      <button class="btn-primary" onclick="goToRecommendation()">
+        View Recommendations
+      </button>
+    </div>
+
+    <div class="right-section">
+      <div class="content-card" style="padding: clamp(30px, 4vw, 40px)">
+        <p id="typeDescription">Loading your insights...</p>
+      </div>
+
+      <div class="content-card">
+        <h3 style="
+              color: var(--text-main);
+              letter-spacing: 0.5px;
+              margin-bottom: 25px;
+              font-size: 1.2rem;
+              font-weight: 700;
+              border-bottom: 1px solid var(--glass-border);
+              padding-bottom: 10px;
+            ">
+          Your Dimension Breakdown
+        </h3>
+        <div class="stats-grid" id="statsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      localStorage.setItem(
+        "theme",
+        document.body.classList.contains("light-mode") ? "light" : "dark",
+      );
+    }
+
+    const user = localStorage.getItem("mbtiUser") || "";
+    const result = localStorage.getItem("mbtiResult");
+    const stats = JSON.parse(localStorage.getItem("mbtiStats")) || {
+      E: 50,
+      I: 50,
+      S: 50,
+      N: 50,
+      T: 50,
+      F: 50,
+      J: 50,
+      P: 50,
+    };
+
+    if (!result) window.location.href = "home.html";
+    document.getElementById("resultType").textContent = result;
+
+    const descriptions = {
+      INTJ: "INTJ – The Architect: INTJ are visionary thinkers who prefer strategy over spontaneity and depth over small talk. They crave logic, purpose, and efficiency, often seeing flaws in systems that others overlook. Behind their calm, reserved demeanor lies a mind constantly analyzing, planning, and optimizing. Though they may seem detached, INTJs are deeply driven by their inner values and personal growth. They often prefer working independently, not because they dislike people, but because they trust their own ability to get things done right. Often misunderstood as cold, INTJs actually care deeply — they just express it through action and solution-focused thinking rather than emotion. When committed to a goal or vision, they will stop at nothing to bring it to life",
+      INTP: "INTP – The Logician: INTP are curious, brilliant, and often live inside their own minds — constantly questioning, theorizing, and connecting abstract dots that others miss. They are natural inventors, thinkers, and independent explorers of ideas. Driven by a desire to understand why things work the way they do, INTPs often come across as quiet but mentally sharp, with occasional bursts of passionate ideas. They thrive when given the freedom to follow their own logic and can become completely absorbed in deep thought. Emotionally, they may struggle to express themselves, but they value authenticity and truth above all. If you want a fresh, unconventional idea or a new way of looking at something — ask an INTP.",
+      ENTJ: "ENTJ – The Commander: ENTJ are natural-born leaders, defined by their ambition, clarity, and relentless drive. They see inefficiency as a personal challenge and are quick to organize teams, lead conversations, and set bold goals. ENTJs are confident and assertive, often with a strong presence that commands attention in any room. Though they may seem intimidating, they are deeply goal-oriented — not just for themselves, but for the success of the systems or people they care about. They appreciate intelligence, quick thinking, and results. Emotion doesn't guide their decisions, but respect and competence matter greatly to them. When focused, ENTJs are unstoppable forces who thrive on challenge and growth.",
+      ENTP: "ENTP – The Debater: ENTP are energetic idea-machines — spontaneous, inventive, and known for their sharp minds and even sharper tongues. They love playing with concepts, questioning assumptions, and challenging conventional thinking. ENTPs get bored easily, which is why they thrive in dynamic environments that allow them to think freely and pivot quickly. They often charm others with their wit, humor, and confidence, and they love a good intellectual debate — not because they want to win, but because they want to learn. Beneath their playfulness lies a deep thinker who craves meaning, adventure, and mental stimulation. If something excites their curiosity, they'll dive in headfirst, fully immersed in exploration.",
+      INFJ: "INFJ – The Advocate: INFJ are deep-feeling, intuitive idealists who move through the world with quiet conviction and emotional insight. They are often drawn to helping others, improving society, and working behind the scenes toward meaningful change. INFJs are deeply private, yet emotionally intense — they often sense what others feel without being told. Their vision is long-term, their purpose is rooted in values, and they often carry a quiet strength that others admire but rarely understand. Though sensitive, INFJs are also strategic, organized, and capable of remarkable achievements when aligned with a mission they believe in.",
+      INFP: "INFP – The Mediator: INFP are gentle dreamers with a rich inner world, a powerful sense of compassion, and an unshakable connection to their values. They often feel emotions deeply — their own and others' — and long for authentic, meaningful relationships. INFPs express themselves through creativity, writing, or quiet acts of kindness. They may appear shy or reserved, but beneath that surface is a passionate idealist constantly imagining a better world. They dislike conflict but are not weak — when their core values are threatened, they can be surprisingly firm and even fierce.",
+      ENFJ: "ENFJ – The Protagonist: ENFJ are charismatic leaders and heart-driven motivators, known for their emotional intelligence, empathy, and vision. They thrive in group settings where they can uplift and support others, and are often seen as mentors or natural guides. ENFJs are articulate and persuasive, able to communicate ideas in ways that inspire belief and cooperation. At their best, they blend purpose with compassion — helping others grow while also moving toward a meaningful goal. Though they can overextend themselves, their warmth and strength leave a lasting impact wherever they go.",
+      ENFP: "ENFP – The Campaigner: ENFP are magnetic, spontaneous, and deeply curious about people and the world. Their minds race with ideas, dreams, and possibilities, and they have an uncanny ability to make others feel seen, valued, and excited about life. ENFPs are creative, emotionally aware, and thrive on authentic connections. While they can struggle with consistency or overcommitment, their passion and optimism are infectious. They're the first to say \u201cyes\u201d to adventure, challenge the norm, and uplift others with heartfelt enthusiasm and belief in what could be.",
+      ISTJ: "ISTJ – The Logistician: ISTJ are responsible, loyal, and methodical. They value tradition, honesty, and doing things the right way — even when no one is watching. Quiet and reserved, ISTJs don't seek the spotlight but often end up being the steady force behind any successful team or family. They thrive on routines and take great pride in fulfilling their duties with care and precision. Though emotionally reserved, ISTJs show love through actions, not words — and their dependability often becomes the backbone others lean on.",
+      ISFJ: "ISFJ – The Defender: ISFJ are gentle, nurturing, and incredibly attentive to the needs of others. Often called \u201cthe quiet guardians,\u201d they are humble but strong, kind but firm, and thrive in environments where their effort supports those they love. They're practical and detail-oriented, but also emotionally intuitive — often remembering the small things that make others feel valued. ISFJs are deeply loyal and often put others' needs ahead of their own, which makes them natural caretakers and protectors in both personal and professional settings.",
+      ESTJ: "ESTJ – The Executive: ESTJ are natural organizers who value order, productivity, and responsibility. They take charge with confidence and are happiest when managing people, systems, or structures to create efficiency. Logical and direct, they may come off as blunt, but their goal is always clarity and results. ESTJs thrive on routine, tradition, and measurable progress — they like knowing what works and getting it done. While they may not show emotion easily, their care comes through in leadership, structure, and consistency.",
+      ESFJ: "ESFJ – The Consul: ESFJ are warm, friendly, and community-oriented. They're the ones remembering birthdays, checking in, and making sure no one is left behind. Deeply loyal and generous, ESFJs find purpose in helping others and maintaining harmony. They are practical, reliable, and incredibly tuned in to social expectations — often serving as the emotional glue in group settings. Though they can struggle with criticism or change, their dedication to loved ones makes them dependable and compassionate anchors in both friendships and teams.",
+      ISTP: "ISTP – The Virtuoso: ISTP are cool, collected, and incredibly skilled at hands-on problem solving. They have sharp minds, quick reflexes, and a love for understanding how things work. Whether it's fixing, building, or experimenting, ISTPs learn by doing — and often excel in high-pressure, real-world situations. They're independent, observant, and action-oriented, preferring to work alone or on their own terms. Though emotionally reserved, they're loyal in their own quiet, matter-of-fact way, and live life by logic, not drama.",
+      ISFP: "ISFP – The Adventurer: ISFP are soft-spoken yet deeply expressive, often communicating more through creativity than words. They are sensitive, adaptable, and drawn to beauty in all forms — whether in nature, art, or human connection. ISFPs live in the present moment, guided by emotion, experience, and a deep inner sense of what feels right. They dislike conflict and structure, preferring to go with the flow and follow their heart. Though quiet, their authenticity and gentle warmth leave a lasting impression.",
+      ESTP: "ESTP – The Entrepreneur: ESTP are bold, confident, and quick to act. They're at their best in fast-paced environments where they can solve problems on the spot and engage directly with the world. Known for their charisma and sharp wit, ESTPs love a challenge and enjoy taking risks — whether in business, sports, or conversation. They live by experience rather than theory and are masters of improvisation. While they may struggle with long-term planning, their energy and adaptability make them powerful forces in the now.",
+      ESFP: "ESFP – The Entertainer: ESFP are vibrant, fun-loving, and deeply tuned in to their surroundings. They thrive on excitement, connection, and sensory experiences — often bringing joy and liveliness wherever they go. With a flair for drama and an eye for beauty, ESFPs love making others smile, whether through music, fashion, humor, or a spontaneous adventure. They are emotionally open and generous, living fully in the moment. Though they can struggle with boredom or long-term planning, they remind us all to embrace joy and connection.",
+    };
+    document.getElementById("typeDescription").textContent =
+      descriptions[result] || "Analysis incomplete.";
+
+    // --- RENDER GRAPHS ---
+    const grid = document.getElementById("statsGrid");
+    const pairs = [
+      {
+        left: "E",
+        right: "I",
+        labelL: "Extroversion",
+        labelR: "Introversion",
+      },
+      { left: "S", right: "N", labelL: "Sensing", labelR: "Intuition" },
+      { left: "T", right: "F", labelL: "Thinking", labelR: "Feeling" },
+      { left: "J", right: "P", labelL: "Judging", labelR: "Perceiving" },
+    ];
+
+    pairs.forEach((p) => {
+      let valL = stats[p.left] || 0;
+      let valR = stats[p.right] || 0;
+      const total = valL + valR;
+      if (total === 0) {
+        valL = 50;
+        valR = 50;
+      } else {
+        valL = Math.round((valL / total) * 100);
+        valR = 100 - valL;
+      }
+
+      // Indicator position: valL% from left (100% left = fully left trait)
+      // Active fill = valL% width
+      const leftDom = valL >= valR ? 'label-dominant' : 'label-weak';
+      const rightDom = valR > valL ? 'label-dominant' : 'label-weak';
+
+      const html = `
+                <div class="stat-row">
+                    <div class="stat-header">
+                        <span class="label-left ${leftDom}">${p.labelL} ${valL}%</span>
+                        <span class="label-right ${rightDom}">${valR}% ${p.labelR}</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-track"></div>
+                        <div class="bar-active-fill" data-width="${valL}%"></div>
+                        <div class="bar-indicator" data-pos="${valL}%"></div>
+                    </div>
+                </div>`;
+      grid.innerHTML += html;
+    });
+
+    // Animate bars and indicators after paint
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.bar-active-fill').forEach((bar) => {
+        bar.style.width = bar.dataset.width;
+      });
+      document.querySelectorAll('.bar-indicator').forEach((dot) => {
+        dot.style.left = dot.dataset.pos;
+      });
+    });
+
+    function goToRecommendation() {
+      if (user) localStorage.setItem("mbtiUser", user);
+      localStorage.setItem("mbtiResult", result);
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = "recommendation.html";
+      }, 500);
+    }
+  </script>
+
+  <!-- Particle Effect -->
+  <script>
+    const canvas = document.getElementById("particleCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vy = Math.random() * 0.5 + 0.3;
+        this.size = Math.random() * 2 + 1;
+        this.op = Math.random() * 0.4 + 0.3;
+        const hue = Math.floor(Math.random() * 20) + 200;
+        const sat = Math.floor(Math.random() * 30) + 70;
+        const light = document.body.classList.contains("light-mode")
+          ? Math.floor(Math.random() * 15) + 45
+          : Math.floor(Math.random() * 25) + 60;
+        this.color = `hsla(${hue}, ${sat}%, ${light}%, ${this.op})`;
+      }
+      update() {
+        this.y += this.vy;
+        this.x += Math.sin(this.y * 0.01) * 0.3;
+        if (this.y > canvas.height) {
+          this.y = -10;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function spawnParticles() {
+      particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push(new Particle());
+      }
+    }
+    spawnParticles();
+
+    if (typeof toggleTheme === "function") {
+      const _prev = toggleTheme;
+      window.toggleTheme = function () {
+        _prev();
+        spawnParticles();
+      };
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</body>
+
+</html>
